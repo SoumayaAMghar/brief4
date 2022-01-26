@@ -2,11 +2,6 @@
     include_once 'includes/dbhandler.php';
 ?>
 
-<?php
-    $display_all_products = "SELECT * FROM shopnowdb;";
-    $result = mysqli_query($conn, $display_all_products);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,16 +11,23 @@
     <link rel="stylesheet" href="style.css">
     <title>Document</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 </head>
 <body style="background-color: rgb(43, 43, 43);">
     
     <section class="navbar">
+        <form action="" method="get">
+        <input type="hidden" name="allProducts" value="">
+        <button class="logo-button" type="submit">
         <img class="logo" src="./icons/logo.svg" alt="">
+        </button>
+
+        </form>
+        
         <div class="searching">
-            <form action="">
-                <input id="search-input" style="outline:none;"  placeholder="search by ref/name"></input>
+            <form action="" method="get">
+                <input id="search-input" style="outline:none;" name="search" value=""  placeholder="search by name"></input>
                 <label for="search-input">
                     <img id="magnifying-glass" src="icons/magnifying-glass-solid.svg" alt="">
                 </label>
@@ -116,7 +118,27 @@
                 <img class="add" style="width: 19px; justify-self: end;" src="./icons/bouton-ajouter.png" alt="">
             </div>
             
-            <?php while($product = mysqli_fetch_assoc($result)):?>
+            <?php
+            if(isset($_GET['search'])){
+
+                $search_char = $_GET['search'];
+                $query = "SELECT * FROM shopnowdb WHERE Name LIKE '%$search_char%';";
+                $result = mysqli_query($conn,$query);
+
+            }
+            elseif(isset($_GET['allProducts'])){
+                
+                $display_all_products = "SELECT * FROM shopnowdb;";
+                $result = mysqli_query($conn, $display_all_products); 
+            }
+            else{
+
+                $display_all_products = "SELECT * FROM shopnowdb;";
+                $result = mysqli_query($conn, $display_all_products);
+
+            }
+
+            while($product = mysqli_fetch_assoc($result)):?>
             <div class="products">
                 <p>#<?= $product['Ref'] ?></p>
                 <p class="p-name"><?= $product['Name'] ?></p>
@@ -125,8 +147,29 @@
                 <p class="removable"><?= $product['Size'] ?></p>
                 <p class="removable"><?= $product['Price'] ?>$</p>
                 <p class="removable"><?= $product['Stock'] ?> pcs</p>
-                <img class="edit" src="./icons/edit.svg" alt="">
-                <img class="delete" src="./icons/delete.svg" alt="">
+                <img class="edit" src="./icons/edit.svg" 
+                
+                data-ref="<?= $product['Ref'] ?>" 
+                data-name="<?= $product['Name'] ?>"
+                data-category="<?= $product['Category'] ?>"
+                data-material="<?= $product['Material'] ?>"
+                data-size="<?= $product['Size'] ?>"
+                data-price="<?= $product['Price'] ?>"
+                data-stock="<?= $product['Stock'] ?>"
+                data-img="<?= $product['img'] ?>"
+                
+                alt="">
+
+                <form  style="display: flex; justify-content: center;" action="delete.product.php" method="post">
+
+                <input class="hidden-ref" type="hidden" name="ref" value="<?= $product['Ref'] ?>">
+
+                    <button class="submit-delete" type="submit" >
+                        <img class="delete" src="./icons/delete.svg" alt="">
+                    </button>
+
+                </form>
+               
                 <img class="view" src="./icons/view.svg"
 
             
@@ -137,10 +180,14 @@
                 data-size="<?= $product['Size'] ?>"
                 data-price="<?= $product['Price'] ?>"
                 data-stock="<?= $product['Stock'] ?>"
-                
+                data-img="<?= $product['img'] ?>"
+
+
                 alt="view item">
             </div>
             <?php endwhile;?>
+ 
+            
 
         </div>
     </section>
@@ -160,6 +207,7 @@
             </div>
 
                 <div class="display-img">
+                    <img style="width: 100%;height:100%;object-fit:contain" src="./img/B.png" alt="">
                 </div>
 
                 <div class="display-infos">
@@ -212,7 +260,7 @@
 <!-- -----------------ADD ITEM--------------------------- -->
 
 
-    <form style="display: flex; justify-content: center;" action="add.product.php" method="post">
+    <form style="display: flex; justify-content: center;" action="add.product.php" method="post"  enctype="multipart/form-data">
         <section class="position-lightbox add-form" style="display: none;">
         <div class="new-item">
             <div class="close-button">
@@ -221,7 +269,7 @@
             <p class="menu-title">New Item</p>
 
             <input style="display:none;" name="file" type="file" id="file-add">
-            <label for="file-add" class="product-img-empty">
+            <label for="file-add" class="product-img-empty clickable">
                 <img style="height : 77px" src="./icons/cloud-arrow-up-solid.svg" alt="">
             </label>
             
@@ -278,7 +326,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="add-button">    
+            <button type="submit" class="add-button clickable">    
                 Add
             </button>
               
@@ -289,7 +337,7 @@
 <!-- -----------------EDIT ITEM--------------------------- -->
 
 
-<form style="display: flex; justify-content: center;" action="edit.product.php">
+<form style="display: flex; justify-content: center;" action="edit.product.php" method="post"  enctype="multipart/form-data">
     <section class="position-lightbox edit-form" style="display: none;">
         <div class="new-item">
             <div class="close-button">
@@ -297,19 +345,19 @@
             </div>
             <p class="menu-title">Edit Item</p>
 
-            <input style="display:none;" type="file" id="file-add">
-            <label for="file-add" class="product-img-empty">
+            <input style="display:none;" name="file" type="file" id="file-edit">
+            <label for="file-edit" class="product-img-empty clickable">
                 <img style="height : 77px" src="./icons/cloud-arrow-up-solid.svg" alt="">
             </label>
 
 
             <div class="row">
                 <div class="refdiv">
-                    <input type="hidden" class="form-control" id="Ref" name="ref"/>
+                    <input type="hidden" class="form-control ref-hidden" id="Ref" name="ref" value="" />
                 </div>
                 <div class="namediv">
                     <div class="itemsinfo"><label for="name">Name :</label></div>
-                    <input type="text" class="form-control" id="name" name="name">
+                    <input type="text" class="form-control name-hidden" id="name" name="name" value=""/>
                 </div>
             </div>
 
@@ -317,7 +365,7 @@
                 
                 <div class="categorydiv">
                     <div class="itemsinfo"><label for="category">Category :</label></div>
-                    <select  class="form-control" id="category" name="category">
+                    <select  class="form-control category-hidden" id="category" name="category" value="">
                         <option value="nothing"></option>
                         <option value="rings">rings</option>
                         <option value="bracelets">bracelets</option>
@@ -326,7 +374,7 @@
                 </div>
                 <div class="materialdiv">
                     <div class="itemsinfo"><label for="material">Material :</label></div>
-                    <select class="form-control" id="material" name="material">
+                    <select class="form-control material-hidden" id="material" name="material" value="">
                         <option value="nothing"></option>
                         <option value="silver">silver</option>
                         <option value="gold">gold</option>
@@ -339,7 +387,7 @@
             <div class="thirdrow">
                 <div class="sizediv">
                     <div class="itemsinfo"><label for="Size">Size :</label></div>
-                    <select  class="form-control" id="size" name="size">
+                    <select  class="form-control size-hidden" id="size" name="size" value="">
                         <option value="nothing"></option>
                         <option value="4">4</option>
                         <option value="5">5</option>
@@ -348,18 +396,18 @@
                 </div>
                 <div class="pricediv">
                     <div class="itemsinfo"><label for="price">Price :</label></div>
-                    <input value=""  type="number" class="form-control" id="price" name="price">
+                    <input value=""  type="number" class="form-control price-hidden" id="price" name="price" value="">
                 </div>
             </div>
             
             <div class="lastrow">
                 <div class="stockdiv">
                     <div class="itemsinfo"><label for="stock">Stock :</label></div>
-                        <input value="" type="number" class="form-control" id="stock" name="stock">
+                        <input value="" type="number" class="form-control stock-hidden" id="stock" name="stock" value="">
                 </div>
             </div>
 
-            <button type="submit" class="add-button">    
+            <button type="submit" class="add-button clickable">    
                 Edit
             </button>
               

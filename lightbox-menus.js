@@ -1,6 +1,6 @@
 var form
 
-///////////////////////////////////////////////////
+////////////////////ADD///////////////////////////
 var add = document.querySelector('.add')
 add.addEventListener('click', display_add_form)
 
@@ -12,15 +12,21 @@ function display_add_form(){
 var edit = document.querySelectorAll('.edit')
 
 edit.forEach(function(element){
-    element.addEventListener('click',display_edit_form)
+    element.addEventListener('click',function(){
+        form = document.querySelector('.edit-form')
+        form.style.display = 'flex';
+        document.querySelector('.ref-hidden').value = element.dataset.ref;
+        document.querySelector('.name-hidden').value = element.dataset.name;
+        document.querySelector('.category-hidden').value = element.dataset.category;
+        document.querySelector('.material-hidden').value = element.dataset.material;
+        document.querySelector('.size-hidden').value = element.dataset.size;
+        document.querySelector('.price-hidden').value = element.dataset.price;
+        document.querySelector('.stock-hidden').value = element.dataset.stock;
+ 
+    })
 })
 
-
-function display_edit_form(){
-    form = document.querySelector('.edit-form')
-    form.style.display = 'flex';
-}
-///////////////////////////////////////////////////
+////////////////////////View///////////////////////
 
 var view = document.querySelectorAll('.view')
 
@@ -29,6 +35,7 @@ view.forEach(function(element){
         form = document.querySelector('.view-form')
         form.style.display = 'flex';
         
+        document.querySelector(".display-img img").setAttribute('src',"products.images/"+element.dataset.img);
         document.querySelector(".catch-name").textContent = element.dataset.name;
         document.querySelector(".catch-ref").textContent = "#"+element.dataset.ref;
         document.querySelector(".catch-material").textContent = element.dataset.material;
@@ -41,13 +48,7 @@ view.forEach(function(element){
 
 });
 
-function display_view_form(){
-    form = document.querySelector('.view-form')
-    form.style.display = 'flex';
-    document.querySelector(".catch-ref").textContent = view.dataset.ref;
-}
-
-///////////////////////////////////////////////////
+///////////////////////CLOSE//////////////////////
 
 var close_button = document.querySelectorAll('.close-button')
 
@@ -59,7 +60,7 @@ function close_lightbox(){
    form.style.display = 'none';
 }
 
-//////////////////////////////////////////////
+/////////////////////FILTER////////////////////
 
 const filter = document.querySelector('.form-filter');
 const filter_icon = document.getElementById('filter-icon');
@@ -67,13 +68,4 @@ filter_icon.addEventListener('click',function(){
     filter.classList.toggle('show')
 })
 
-// const filter_icon = document.getElementById('filter-icon');
-// filter_icon.addEventListener('click',function(){
-//     const filter = document.querySelector('.form-filter');
-//     if(filter.style.display == 'none'){
-//         filter.style.display = 'flex';
-//     }else{  
-//         filter.style.display = 'none'
-//     }
-        
-// })
+
