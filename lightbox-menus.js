@@ -45,7 +45,6 @@ view.forEach(function(element){
         document.querySelector(".catch-stock").textContent = element.dataset.stock;
 
     })
-
 });
 
 ///////////////////////CLOSE//////////////////////

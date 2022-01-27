@@ -22,7 +22,6 @@
         <button class="logo-button" type="submit">
         <img class="logo" src="./icons/logo.svg" alt="">
         </button>
-
         </form>
         
         <div class="searching">
@@ -125,11 +124,7 @@
                 $query = "SELECT * FROM shopnowdb WHERE Name LIKE '%$search_char%';";
                 $result = mysqli_query($conn,$query);
 
-            }
-            elseif(isset($_GET['allProducts'])){
-                
-                $display_all_products = "SELECT * FROM shopnowdb;";
-                $result = mysqli_query($conn, $display_all_products); 
+
             }
             else{
 
